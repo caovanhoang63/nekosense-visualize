@@ -1,0 +1,192 @@
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { DateRange } from "react-day-picker"
+import { Slider } from "@/components/ui/slider"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Eye, EyeOff } from "lucide-react"
+import Image from "next/image";
+import imgSource from "../../../public/images/heatmap_example.png"
+interface HeatmapSectionProps {
+    dateRange: DateRange
+    location: string
+    device: string
+}
+export function HeatmapSection({ dateRange, location, device }: HeatmapSectionProps) {
+    const [heatmapOpacity, setHeatmapOpacity] = useState(70)
+    const [showHeatmap, setShowHeatmap] = useState(true)
+    const [viewportWidth, setViewportWidth] = useState(1280)
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const scrollCanvasRef = useRef<HTMLCanvasElement>(null)
+
+    // Mock data for heatmap
+    const mockHeatmapData = [
+        { x: 150, y: 100, value: 10 },
+        { x: 250, y: 150, value: 20 },
+        { x: 350, y: 200, value: 30 },
+        { x: 450, y: 250, value: 15 },
+        { x: 550, y: 300, value: 25 },
+        { x: 650, y: 350, value: 5 },
+        { x: 750, y: 400, value: 35 },
+        { x: 200, y: 450, value: 40 },
+        { x: 300, y: 500, value: 20 },
+        { x: 400, y: 550, value: 10 },
+        { x: 500, y: 600, value: 30 },
+        { x: 600, y: 650, value: 25 },
+        { x: 700, y: 700, value: 15 },
+    ]
+
+    // Mock data for scroll depth
+    const mockScrollData = [
+        { depth: 0, percentage: 100 },
+        { depth: 500, percentage: 80 },
+        { depth: 1000, percentage: 60 },
+        { depth: 1500, percentage: 40 },
+        { depth: 2000, percentage: 20 },
+        { depth: 2500, percentage: 10 },
+    ]
+
+    useEffect(() => {
+        // Draw heatmap
+        const canvas = canvasRef.current
+        if (canvas) {
+            const ctx = canvas.getContext("2d")
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+                if (showHeatmap) {
+                    mockHeatmapData.forEach((point) => {
+                        const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 50)
+
+                        const alpha = (point.value / 40) * (heatmapOpacity / 100)
+
+                        gradient.addColorStop(0, `rgba(255, 0, 0, ${alpha})`)
+                        gradient.addColorStop(0.5, `rgba(255, 255, 0, ${alpha * 0.6})`)
+                        gradient.addColorStop(1, `rgba(0, 0, 255, 0)`)
+
+                        ctx.fillStyle = gradient
+                        ctx.beginPath()
+                        ctx.arc(point.x, point.y, 50, 0, 2 * Math.PI)
+                        ctx.fill()
+                    })
+                }
+            }
+        }
+
+        // Draw scroll depth
+        const scrollCanvas = scrollCanvasRef.current
+        if (scrollCanvas) {
+            const ctx = scrollCanvas.getContext("2d")
+            if (ctx) {
+                ctx.clearRect(0, 0, scrollCanvas.width, scrollCanvas.height)
+
+                // Draw webpage background
+                ctx.fillStyle = "#f9f9f9"
+                ctx.fillRect(0, 0, scrollCanvas.width, scrollCanvas.height)
+
+                // Draw scroll depth gradient
+                const gradient = ctx.createLinearGradient(0, 0, 0, scrollCanvas.height)
+                gradient.addColorStop(0, "rgba(0, 255, 0, 0.5)")
+                gradient.addColorStop(0.6, "rgba(255, 255, 0, 0.5)")
+                gradient.addColorStop(1, "rgba(255, 0, 0, 0.1)")
+
+                ctx.fillStyle = gradient
+                ctx.fillRect(0, 0, scrollCanvas.width, scrollCanvas.height)
+
+                // Draw percentage lines
+                ctx.strokeStyle = "#333"
+                ctx.lineWidth = 1
+
+                mockScrollData.forEach((data) => {
+                    const y = (data.depth / 2500) * scrollCanvas.height
+
+                    ctx.beginPath()
+                    ctx.moveTo(0, y)
+                    ctx.lineTo(scrollCanvas.width, y)
+                    ctx.stroke()
+
+                    ctx.fillStyle = "#000"
+                    ctx.font = "12px Arial"
+                    ctx.fillText(`${data.percentage}%`, 10, y - 5)
+                })
+            }
+        }
+    }, [heatmapOpacity, showHeatmap])
+
+    return (
+        <div className="grid gap-6">
+            <Card>
+                <CardHeader>
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <CardTitle>Heatmap & Scroll Depth</CardTitle>
+                            <CardDescription>Visualize where users click and how far they scroll</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Select
+                                defaultValue={viewportWidth.toString()}
+                                onValueChange={(value) => setViewportWidth(Number.parseInt(value))}
+                            >
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Viewport Width" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="375">Mobile (375px)</SelectItem>
+                                    <SelectItem value="768">Tablet (768px)</SelectItem>
+                                    <SelectItem value="1280">Desktop (1280px)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button variant="outline" size="icon" onClick={() => setShowHeatmap(!showHeatmap)}>
+                                {showHeatmap ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Tabs defaultValue="heatmap">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="heatmap">Click Heatmap</TabsTrigger>
+                            <TabsTrigger value="scroll">Scroll Depth</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="heatmap" className="pt-4">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-sm">Opacity:</span>
+                                    <Slider
+                                        value={[heatmapOpacity]}
+                                        onValueChange={(value) => setHeatmapOpacity(value[0])}
+                                        max={100}
+                                        step={1}
+                                        className="w-[200px]"
+                                    />
+                                    <span className="text-sm">{heatmapOpacity}%</span>
+                                </div>
+                                <div className="relative border rounded-md overflow-hidden">
+                                    <Image
+                                        src="/images/heatmap_example.png"
+                                        height={900}
+                                        width={1280}
+                                        alt="Website screenshot"
+                                        className="w-full"
+                                        style={{ maxWidth: `${viewportWidth}px`, margin: "0 auto" }}
+                                    />
+                                    <canvas ref={canvasRef} width={1280} height={800} className="absolute top-0 left-0 w-full h-full" />
+                                </div>
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="scroll" className="pt-4">
+                            <div className="space-y-4">
+                                <div className="relative border rounded-md overflow-hidden h-[600px]">
+                                    <canvas ref={scrollCanvasRef} width={300} height={600} className="w-full h-full" />
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
