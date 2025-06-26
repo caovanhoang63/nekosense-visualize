@@ -3,7 +3,6 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import type {DateRange} from "react-day-picker"
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from "recharts"
-import {getClicksApi} from "@/services/clicks.api";
 import {getPerformanceApi} from "@/services/performance.api";
 import {useEffect, useState} from "react";
 import {processPerformanceData} from "@/helpers/jsonToPerformanceDisplay";

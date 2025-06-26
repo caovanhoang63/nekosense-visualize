@@ -7,7 +7,13 @@ import {Slider} from "@/components/ui/slider"
 import {Button} from "@/components/ui/button"
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {Eye, EyeOff} from "lucide-react"
-
+import {getHeatmapApi} from "@/services/heatmap.api";
+import {convertToHeatmapWithClustering, convertTrackingToHeatmap} from "@/helpers/heatmapConverter";
+export interface HeatmapDataDisplay {
+    x: number
+    y: number
+    value: number
+}
 interface HeatmapSectionProps {
     dateRange: DateRange
     location: string
@@ -20,23 +26,23 @@ export function HeatmapSection({dateRange, location, device} : HeatmapSectionPro
     const [viewportWidth, setViewportWidth] = useState(1280)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const scrollCanvasRef = useRef<HTMLCanvasElement>(null)
-
+    const [mockHeatmapData, setMockHeatmapData] = useState<HeatmapDataDisplay[]>([])
+    const fetchData = async () => {
+        try {
+            const res = await getHeatmapApi()
+            const heatmapGrid = convertTrackingToHeatmap(res, 50);
+            console.log("Heatmap data with clustering:", heatmapGrid)
+            setMockHeatmapData(heatmapGrid)
+            console.log("Fetched performance data:", res)
+        } catch (error) {
+            console.error("Error fetching data:", error)
+        }
+    }
+    useEffect(() => {
+        fetchData()
+    }, [])
     // Mock data for heatmap
-    const mockHeatmapData = [
-        {x: 150, y: 100, value: 10},
-        {x: 250, y: 150, value: 20},
-        {x: 350, y: 200, value: 30},
-        {x: 450, y: 250, value: 15},
-        {x: 550, y: 300, value: 25},
-        {x: 650, y: 350, value: 5},
-        {x: 750, y: 400, value: 35},
-        {x: 200, y: 450, value: 40},
-        {x: 300, y: 500, value: 20},
-        {x: 400, y: 550, value: 10},
-        {x: 500, y: 600, value: 30},
-        {x: 600, y: 650, value: 25},
-        {x: 700, y: 700, value: 15},
-    ]
+
 
     // Mock data for scroll depth
     const mockScrollData = [
@@ -172,7 +178,7 @@ export function HeatmapSection({dateRange, location, device} : HeatmapSectionPro
                                 height={900}
                                 width={1280}
                                 className="w-full"
-                                style={{maxWidth: `${viewportWidth}px`, margin: "0 auto"}}
+                               /* style={{maxWidth: `${viewportWidth}px`, margin: "0 auto"}}*/
                             >
 
                             </iframe>
