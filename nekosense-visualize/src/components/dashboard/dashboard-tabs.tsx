@@ -11,7 +11,7 @@ interface DashboardTabsProps {
 export function DashboardTabs({ activeTab, setActiveTab }: DashboardTabsProps) {
     return (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
-            <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full">
+            <TabsList className="grid grid-cols-3 md:grid-cols-5 w-full">
                 <TabsTrigger value="overview" className="flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
                     <span className="hidden md:inline">Overview</span>
@@ -28,10 +28,10 @@ export function DashboardTabs({ activeTab, setActiveTab }: DashboardTabsProps) {
                     <Activity className="h-4 w-4" />
                     <span className="hidden md:inline">Interactions</span>
                 </TabsTrigger>
-                <TabsTrigger value="search" className="flex items-center gap-2">
+                {/*<TabsTrigger value="search" className="flex items-center gap-2">
                     <Search className="h-4 w-4" />
                     <span className="hidden md:inline">Search Analytics</span>
-                </TabsTrigger>
+                </TabsTrigger>*/}
                 <TabsTrigger value="performance" className="flex items-center gap-2">
                     <Timer className="h-4 w-4" />
                     <span className="hidden md:inline">Performance</span>

@@ -1,21 +1,20 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { DateRange } from "react-day-picker"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Eye, EyeOff } from "lucide-react"
-import Image from "next/image";
-import imgSource from "../../../public/images/heatmap_example.png"
+import {useState, useRef, useEffect} from "react"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import type {DateRange} from "react-day-picker"
+import {Slider} from "@/components/ui/slider"
+import {Button} from "@/components/ui/button"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Eye, EyeOff} from "lucide-react"
+
 interface HeatmapSectionProps {
     dateRange: DateRange
     location: string
     device: string
 }
-export function HeatmapSection({ dateRange, location, device }: HeatmapSectionProps) {
+
+export function HeatmapSection({dateRange, location, device} : HeatmapSectionProps) {
     const [heatmapOpacity, setHeatmapOpacity] = useState(70)
     const [showHeatmap, setShowHeatmap] = useState(true)
     const [viewportWidth, setViewportWidth] = useState(1280)
@@ -24,29 +23,29 @@ export function HeatmapSection({ dateRange, location, device }: HeatmapSectionPr
 
     // Mock data for heatmap
     const mockHeatmapData = [
-        { x: 150, y: 100, value: 10 },
-        { x: 250, y: 150, value: 20 },
-        { x: 350, y: 200, value: 30 },
-        { x: 450, y: 250, value: 15 },
-        { x: 550, y: 300, value: 25 },
-        { x: 650, y: 350, value: 5 },
-        { x: 750, y: 400, value: 35 },
-        { x: 200, y: 450, value: 40 },
-        { x: 300, y: 500, value: 20 },
-        { x: 400, y: 550, value: 10 },
-        { x: 500, y: 600, value: 30 },
-        { x: 600, y: 650, value: 25 },
-        { x: 700, y: 700, value: 15 },
+        {x: 150, y: 100, value: 10},
+        {x: 250, y: 150, value: 20},
+        {x: 350, y: 200, value: 30},
+        {x: 450, y: 250, value: 15},
+        {x: 550, y: 300, value: 25},
+        {x: 650, y: 350, value: 5},
+        {x: 750, y: 400, value: 35},
+        {x: 200, y: 450, value: 40},
+        {x: 300, y: 500, value: 20},
+        {x: 400, y: 550, value: 10},
+        {x: 500, y: 600, value: 30},
+        {x: 600, y: 650, value: 25},
+        {x: 700, y: 700, value: 15},
     ]
 
     // Mock data for scroll depth
     const mockScrollData = [
-        { depth: 0, percentage: 100 },
-        { depth: 500, percentage: 80 },
-        { depth: 1000, percentage: 60 },
-        { depth: 1500, percentage: 40 },
-        { depth: 2000, percentage: 20 },
-        { depth: 2500, percentage: 10 },
+        {depth: 0, percentage: 100},
+        {depth: 500, percentage: 80},
+        {depth: 1000, percentage: 60},
+        {depth: 1500, percentage: 40},
+        {depth: 2000, percentage: 20},
+        {depth: 2500, percentage: 10},
     ]
 
     useEffect(() => {
@@ -123,7 +122,7 @@ export function HeatmapSection({ dateRange, location, device }: HeatmapSectionPr
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <CardTitle>Heatmap & Scroll Depth</CardTitle>
-                            <CardDescription>Visualize where users click and how far they scroll</CardDescription>
+                            <CardDescription>Visualize where users hover </CardDescription>
                         </div>
                         <div className="flex items-center gap-4">
                             <Select
@@ -131,7 +130,7 @@ export function HeatmapSection({ dateRange, location, device }: HeatmapSectionPr
                                 onValueChange={(value) => setViewportWidth(Number.parseInt(value))}
                             >
                                 <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Viewport Width" />
+                                    <SelectValue placeholder="Viewport Width"/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="375">Mobile (375px)</SelectItem>
@@ -140,51 +139,48 @@ export function HeatmapSection({ dateRange, location, device }: HeatmapSectionPr
                                 </SelectContent>
                             </Select>
                             <Button variant="outline" size="icon" onClick={() => setShowHeatmap(!showHeatmap)}>
-                                {showHeatmap ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                {showHeatmap ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                             </Button>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="heatmap">
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="heatmap">Click Heatmap</TabsTrigger>
-                            <TabsTrigger value="scroll">Scroll Depth</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="heatmap" className="pt-4">
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4">
-                                    <span className="text-sm">Opacity:</span>
-                                    <Slider
-                                        value={[heatmapOpacity]}
-                                        onValueChange={(value) => setHeatmapOpacity(value[0])}
-                                        max={100}
-                                        step={1}
-                                        className="w-[200px]"
-                                    />
-                                    <span className="text-sm">{heatmapOpacity}%</span>
-                                </div>
-                                <div className="relative border rounded-md overflow-hidden">
-                                    <Image
-                                        src="/images/heatmap_example.png"
-                                        height={900}
-                                        width={1280}
-                                        alt="Website screenshot"
-                                        className="w-full"
-                                        style={{ maxWidth: `${viewportWidth}px`, margin: "0 auto" }}
-                                    />
-                                    <canvas ref={canvasRef} width={1280} height={800} className="absolute top-0 left-0 w-full h-full" />
-                                </div>
-                            </div>
-                        </TabsContent>
-                        <TabsContent value="scroll" className="pt-4">
-                            <div className="space-y-4">
-                                <div className="relative border rounded-md overflow-hidden h-[600px]">
-                                    <canvas ref={scrollCanvasRef} width={300} height={600} className="w-full h-full" />
-                                </div>
-                            </div>
-                        </TabsContent>
-                    </Tabs>
+
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm">Opacity:</span>
+                            <Slider
+                                value={[heatmapOpacity]}
+                                onValueChange={(value) => setHeatmapOpacity(value[0])}
+                                max={100}
+                                step={1}
+                                className="w-[200px]"
+                            />
+                            <span className="text-sm">{heatmapOpacity}%</span>
+                        </div>
+                        <div className="relative border rounded-md overflow-hidden">
+                            {/*<Image
+                                src="/images/heatmap_example.png"
+                                height={900}
+                                width={1280}
+                                alt="Website screenshot"
+                                className="w-full"
+                                style={{maxWidth: `${viewportWidth}px`, margin: "0 auto"}}
+                            />*/}
+                            <iframe
+                                src="http://localhost:5173/"
+                                height={900}
+                                width={1280}
+                                className="w-full"
+                                style={{maxWidth: `${viewportWidth}px`, margin: "0 auto"}}
+                            >
+
+                            </iframe>
+                            <canvas ref={canvasRef} width={1280} height={800}
+                                    className="absolute top-0 left-0 w-full h-full"/>
+                        </div>
+                    </div>
+
                 </CardContent>
             </Card>
         </div>

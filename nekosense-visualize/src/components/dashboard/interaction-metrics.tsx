@@ -53,6 +53,7 @@ const elementInteractionData = [
 ]
 
 export function InteractionMetrics({ dateRange, location, device }: InteractionMetricsProps) {
+    console.log()
     return (
         <>
             <Card className="col-span-3">
