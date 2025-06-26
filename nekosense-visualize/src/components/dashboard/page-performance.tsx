@@ -77,43 +77,15 @@ export function PagePerformance({dateRange, location, device}: PagePerformancePr
                                 <Tooltip/>
                                 <Legend/>
                                 <Bar dataKey="lcp" name="LCP (s)" fill="#8884d8"/>
-                                <Bar dataKey="cls" name="FID (s)" fill="#82ca9d"/>
-                                <Bar dataKey="inp" name="CLS" fill="#ffc658"/>
+                                <Bar dataKey="cls" name="CLS (s)" fill="#82ca9d"/>
+                                <Bar dataKey="inp" name="INP" fill="#ffc658"/>
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 </CardContent>
             </Card>
 
-            <Card className="col-span-3">
-                <CardHeader>
-                    <CardTitle>On-site Search Tracking</CardTitle>
-                    <CardDescription>Most popular search terms used on your site</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                data={searchData}
-                                layout="vertical"
-                                margin={{
-                                    top: 5,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3"/>
-                                <XAxis type="number"/>
-                                <YAxis dataKey="term" type="category"/>
-                                <Tooltip/>
-                                <Legend/>
-                                <Bar dataKey="count" name="Search Count" fill="#8884d8"/>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </CardContent>
-            </Card>
+
         </>
     )
 }

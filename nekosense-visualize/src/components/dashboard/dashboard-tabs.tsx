@@ -11,15 +11,15 @@ interface DashboardTabsProps {
 export function DashboardTabs({ activeTab, setActiveTab }: DashboardTabsProps) {
     return (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
-            <TabsList className="grid grid-cols-3 md:grid-cols-5 w-full">
+            <TabsList className="grid grid-cols-3 md:grid-cols-4 w-full">
                 <TabsTrigger value="overview" className="flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
                     <span className="hidden md:inline">Overview</span>
                 </TabsTrigger>
-                <TabsTrigger value="demographics" className="flex items-center gap-2">
+                {/*<TabsTrigger value="demographics" className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     <span className="hidden md:inline">Demographics</span>
-                </TabsTrigger>
+                </TabsTrigger>*/}
                 <TabsTrigger value="heatmap" className="flex items-center gap-2">
                     <MousePointerClick className="h-4 w-4" />
                     <span className="hidden md:inline">Heatmap & Scroll</span>
