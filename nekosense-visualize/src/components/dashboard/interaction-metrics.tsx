@@ -17,6 +17,8 @@ import {
 import {useEffect, useState} from "react";
 import {getHoverToClickApi} from "@/services/clicks.api";
 import {convertHoverToClickDataAdvanced} from "@/helpers/jsonToClickDataDisplay";
+import {getPageViewsApi, getTimeOnPagesApi} from "@/services/pageInfo.api";
+import {convertApiDataToPageViews, convertApiDataToTimeOnPage} from "@/helpers/jsonToPageViewsDisplay";
 
 export interface HoverToClickDataDisplay {
     element: string
@@ -30,31 +32,20 @@ interface InteractionMetricsProps {
     device: string
 }
 
-// Mock data for time on page
-const timeOnPageData = [
-    {date: "Apr 1", value: 120},
-    {date: "Apr 2", value: 145},
-    {date: "Apr 3", value: 132},
-    {date: "Apr 4", value: 167},
-    {date: "Apr 5", value: 178},
-    {date: "Apr 6", value: 156},
-    {date: "Apr 7", value: 189},
-]
+export interface TimeOnPageDataDisplay {
+    date: string
+    value: number
+}
 
-// Mock data for page views
-const pageViewsData = [
-    {date: "Apr 1", views: 1250, uniqueVisitors: 850},
-    {date: "Apr 2", views: 1420, uniqueVisitors: 920},
-    {date: "Apr 3", views: 1380, uniqueVisitors: 890},
-    {date: "Apr 4", views: 1590, uniqueVisitors: 1020},
-    {date: "Apr 5", views: 1680, uniqueVisitors: 1150},
-    {date: "Apr 6", views: 1520, uniqueVisitors: 980},
-    {date: "Apr 7", views: 1720, uniqueVisitors: 1200},
-]
-
+export interface PageViewsDataDisplay {
+    date: string
+    views: number
+}
 
 export function InteractionMetrics({dateRange, location, device}: InteractionMetricsProps) {
     const [hoverToClickData, setHoverToClickData] = useState<HoverToClickDataDisplay[]>([])
+    const [pageViewData, setPageViewData] = useState<PageViewsDataDisplay[]>([])
+    const [timeOnPageData, setTimeOnPageData] = useState<TimeOnPageDataDisplay[]>([])
     const fetchData = async () => {
         try {
             const res = await getHoverToClickApi()
@@ -74,8 +65,30 @@ export function InteractionMetrics({dateRange, location, device}: InteractionMet
             console.error("Error fetching data:", error)
         }
     }
+    const fetchViewsData = async () => {
+        try {
+            const res = await getPageViewsApi()
+            const pageViewsData = convertApiDataToPageViews(res)
+            setPageViewData(pageViewsData)
+            console.log("Fetched page views data:", res)
+        } catch (error) {
+            console.error("Error fetching data:", error)
+        }
+    }
+    const fetchTimeOnPageData = async () => {
+        try {
+            const res = await getTimeOnPagesApi()
+            const timeOnPage = convertApiDataToTimeOnPage(res)
+            setTimeOnPageData(timeOnPage)
+            console.log("Fetched page views data:", res)
+        } catch (error) {
+            console.error("Error fetching data:", error)
+        }
+    }
     useEffect(() => {
         fetchData()
+        fetchViewsData()
+        fetchTimeOnPageData()
     }, [])
     return (
         <>
@@ -112,13 +125,13 @@ export function InteractionMetrics({dateRange, location, device}: InteractionMet
             <Card className="col-span-3">
                 <CardHeader>
                     <CardTitle>Page Views & Referrals</CardTitle>
-                    <CardDescription>Total page views and unique visitors</CardDescription>
+                    <CardDescription>Total page views</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart
-                                data={pageViewsData}
+                                data={pageViewData}
                                 margin={{
                                     top: 10,
                                     right: 30,
@@ -132,8 +145,6 @@ export function InteractionMetrics({dateRange, location, device}: InteractionMet
                                 <Tooltip/>
                                 <Legend/>
                                 <Area type="monotone" dataKey="views" stackId="1" stroke="#8884d8" fill="#8884d8"/>
-                                <Area type="monotone" dataKey="uniqueVisitors" stackId="2" stroke="#82ca9d"
-                                      fill="#82ca9d"/>
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -150,11 +161,11 @@ export function InteractionMetrics({dateRange, location, device}: InteractionMet
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={hoverToClickData}
-                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                margin={{top: 20, right: 30, left: 20, bottom: 5}}
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="element" />
-                                <YAxis yAxisId="left" />
+                                <CartesianGrid strokeDasharray="3 3"/>
+                                <XAxis dataKey="element"/>
+                                <YAxis yAxisId="left"/>
                                 <YAxis
                                     yAxisId="right"
                                     orientation="right"
@@ -165,10 +176,10 @@ export function InteractionMetrics({dateRange, location, device}: InteractionMet
                                         dx: 10
                                     }}
                                 />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="clicks" yAxisId="left" fill="#8884d8" name="Clicks" />
-                                <Bar dataKey="hover" yAxisId="right" fill="#82ca9d" name="Hovers (ms)" />
+                                <Tooltip/>
+                                <Legend/>
+                                <Bar dataKey="clicks" yAxisId="left" fill="#8884d8" name="Clicks"/>
+                                <Bar dataKey="hover" yAxisId="right" fill="#82ca9d" name="Hovers (ms)"/>
                             </BarChart>
                         </ResponsiveContainer>
 

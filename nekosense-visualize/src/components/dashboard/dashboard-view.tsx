@@ -45,10 +45,10 @@ export default function DashboardView() {
                 title="Analytics Dashboard"
                 description="Comprehensive view of user behavior and site performance"
             >
-                <DatePickerWithRange
+               {/* <DatePickerWithRange
                     date={dateRange}
                     setDate={(date) => setDateRange({from: date.from ?? dateRange.from, to: date.to ?? dateRange.to})}
-                />
+                />*/}
             </DashboardHeader>
 
             <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab}/>

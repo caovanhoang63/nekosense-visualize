@@ -84,8 +84,6 @@ export function PagePerformance({dateRange, location, device}: PagePerformancePr
                     </div>
                 </CardContent>
             </Card>
-
-
         </>
     )
 }
